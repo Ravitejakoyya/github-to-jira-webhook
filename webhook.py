@@ -54,47 +54,97 @@ if __name__ == '__main__':
 # PROJECT_KEY = "SCRUM"
 
 # === JIRA TICKET CREATOR ===
-def create_jira_ticket(summary, description):
+# def create_jira_ticket(summary, description):
+#     headers = {
+#         "Accept": "application/json",
+#         "Content-Type": "application/json"
+#     }
+
+#     payload = json.dumps({
+#         "fields": {
+#             "project": {"key": PROJECT_KEY},
+#             "summary": summary,
+#             "description": description,
+#             "issuetype": {"name": "Task"}
+#         }
+#     })
+
+#     auth = HTTPBasicAuth(EMAIL, API_TOKEN)
+#     response = requests.post(JIRA_API_URL, data=payload, headers=headers, auth=auth)
+
+#     if response.status_code == 201:
+#         print("✅ Jira ticket created successfully.")
+#         return response.json()
+#     else:
+#         print("❌ Jira ticket creation failed:", response.status_code, response.text)
+#         return None
+
+import requests
+
+def create_jira_ticket(pr_data):
+    url = "https://ravitejakoyya.atlassian.net/rest/api/3/issue"
+    auth = (EMAIL, API_TOKEN)
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json"
     }
 
-    payload = json.dumps({
+    payload = {
         "fields": {
-            "project": {"key": PROJECT_KEY},
-            "summary": summary,
-            "description": description,
-            "issuetype": {"name": "Task"}
+            "project": {
+                "key": PROJECT_KEY
+            },
+            "summary": f"[AUTO] {pr_data['title']}",
+            "description": pr_data.get("body", "No description."),
+            "issuetype": {
+                "name": "Task"
+            }
         }
-    })
+    }
 
-    auth = HTTPBasicAuth(EMAIL, API_TOKEN)
-    response = requests.post(JIRA_API_URL, data=payload, headers=headers, auth=auth)
+    response = requests.post(url, json=payload, headers=headers, auth=auth)
+    print("Jira Response:", response.status_code, response.text)
 
-    if response.status_code == 201:
-        print("✅ Jira ticket created successfully.")
-        return response.json()
-    else:
-        print("❌ Jira ticket creation failed:", response.status_code, response.text)
-        return None
+    return response.status_code == 201
+
+print("🔍 Jira response code:", response.status_code)
+print("🔍 Jira response body:", response.text)
+
 
 # === GITHUB WEBHOOK HANDLER ===
+# @app.route('/webhook', methods=['POST'])
+# def github_webhook():
+#     data = request.json
+#     print("📩 GitHub Webhook Received")
+
+#     # Handle Pull Request creation
+#     if data.get('action') == 'opened' and 'pull_request' in data:
+#         pr = data['pull_request']
+#         title = pr['title']
+#         url = pr['html_url']
+#         description = f"A new Pull Request was opened:\n\n{url}"
+
+#         create_jira_ticket(summary=title, description=description)
+
+#     return jsonify({'status': 'received'}), 200
+
 @app.route('/webhook', methods=['POST'])
-def github_webhook():
-    data = request.json
-    print("📩 GitHub Webhook Received")
+def webhook():
+    data = request.get_json()
+    print("📬 GitHub webhook received")
 
-    # Handle Pull Request creation
-    if data.get('action') == 'opened' and 'pull_request' in data:
-        pr = data['pull_request']
-        title = pr['title']
-        url = pr['html_url']
-        description = f"A new Pull Request was opened:\n\n{url}"
+    if "pull_request" in data:
+        pr_data = {
+            "title": data["pull_request"]["title"],
+            "body": data["pull_request"]["body"]
+        }
+        success = create_jira_ticket(pr_data)
+        if success:
+            print("✅ Jira ticket created.")
+        else:
+            print("❌ Failed to create Jira ticket.")
+    return jsonify({"status": "ok"}), 200
 
-        create_jira_ticket(summary=title, description=description)
-
-    return jsonify({'status': 'received'}), 200
 
 # === START SERVER ===
 if __name__ == '__main__':
