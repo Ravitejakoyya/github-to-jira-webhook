@@ -24,7 +24,9 @@ def webhook():
 if __name__ == '__main__':
     app.run(port=5000)
 
-
+#Everything below this line is commented out for clarity
+# # GitHub Actions Workflow Example
+# # This is a sample GitHub Actions workflow that runs the webhook script   
 
 # from flask import Flask, request, jsonify
 # from requests.auth import HTTPBasicAuth
