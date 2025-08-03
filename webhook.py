@@ -9,6 +9,12 @@ EMAIL = "Ravitejakoyya651@gmail.com"
 API_TOKEN = os.environ.get("JIRA_API_TOKEN")  # ✅ Fetch from environment variable
 PROJECT_KEY = "SCRUM"
 
+from requests.auth import HTTPBasicAuth
+import requests
+import json 
+
+app = Flask(__name__)
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.get_json()
@@ -17,6 +23,7 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(port=5000)
+
 
 
 # from flask import Flask, request, jsonify
