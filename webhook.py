@@ -1,27 +1,48 @@
 from flask import Flask, request, jsonify
-from requests.auth import HTTPBasicAuth
-import requests
-import json
 import os
 
 app = Flask(__name__)
 
-env:
-  JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-
-steps:
-  - name: Run Webhook Script
-    run: python webhook.py
-    env:
-      JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-
-
-# === JIRA CONFIG ===
 JIRA_DOMAIN = "ravitejakoyya.atlassian.net"
 JIRA_API_URL = f"https://{JIRA_DOMAIN}/rest/api/3/issue"
 EMAIL = "Ravitejakoyya651@gmail.com"
-API_TOKEN = os.environ.get("JIRA_API_TOKEN")
+API_TOKEN = os.environ.get("JIRA_API_TOKEN")  # ✅ Fetch from environment variable
 PROJECT_KEY = "SCRUM"
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.get_json()
+    print("✅ Webhook received:", data)
+    return jsonify({"message": "Webhook received"}), 200
+
+if __name__ == '__main__':
+    app.run(port=5000)
+
+
+# from flask import Flask, request, jsonify
+# from requests.auth import HTTPBasicAuth
+# import requests
+# import json
+# import os
+
+# app = Flask(__name__)
+
+# env:
+#   JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+# steps:
+#   - name: Run Webhook Script
+#     run: python webhook.py
+#     env:
+#       JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
+
+# # === JIRA CONFIG ===
+# JIRA_DOMAIN = "ravitejakoyya.atlassian.net"
+# JIRA_API_URL = f"https://{JIRA_DOMAIN}/rest/api/3/issue"
+# EMAIL = "Ravitejakoyya651@gmail.com"
+# API_TOKEN = os.environ.get("JIRA_API_TOKEN")
+# PROJECT_KEY = "SCRUM"
 
 # === JIRA TICKET CREATOR ===
 def create_jira_ticket(summary, description):
