@@ -222,8 +222,9 @@ This automation saves time, improves traceability, and integrates your dev workf
 If you found this helpful:
 
 ⭐️ Follow me on LinkedIn — https://www.linkedin.com/in/koyya-raviteja/
-⭐️ Follow me on GitHub — Ravitejakoyya (Raviteja Reddy)
+⭐️ Follow me on GitHub — https://github.com/Ravitejakoyya/
 ⭐️ Follow me on Medium - https://medium.com/@ravitejakoyya651/
 
 💬 Drop your questions or improvements in the comments
 Happy Automating! ⚙️🧠💡
+
