@@ -71,3 +71,6 @@ if __name__ == '__main__':
 
 #pushed to github
 # Set the JIRA_API_TOKEN environment variable before running the app
+# --- IGNORE ---
+# --- IGNORE ---
+# --AUTOMATED -----
